@@ -1,14 +1,15 @@
 import { useActorRef } from "@xstate/react";
+import type { SendJsonMessage, WebSocketLike } from "react-use-websocket/dist/lib/types";
 
-import { useWebSocketSetup, type LobbyEvent } from "~/websocket";
 import { lobbyMachine } from "~/lobby";
 import { PlayerList } from "~/components/player-list";
-
-import { useEffect } from "react";
+import type { LobbyEvent } from "~/events/lobby";
+import { useWebSocketSetup } from "~/websocket";
 
 export interface LobbyProps {
-  socket: WebSocket;
+  socket: WebSocketLike;
   lobby: LobbyEvent;
+  sendJsonMessage: SendJsonMessage;
 }
 
 export function Lobby(props: LobbyProps) {
@@ -19,11 +20,7 @@ export function Lobby(props: LobbyProps) {
       owner: props.lobby.data.owner,
     },
   });
-  // useWebSocketSetup(props.socket, actorRef);
-
-  useEffect(() => {
-    console.log("[Lobby] props.lobby changed", props.lobby);
-  }, [props.lobby]);
+  useWebSocketSetup(props.socket, props.sendJsonMessage, actorRef);
 
   return (
     <div className="flex-grow grid grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4">

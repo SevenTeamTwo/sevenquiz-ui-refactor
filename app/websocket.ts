@@ -1,53 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import type { ActorRefFrom } from "xstate";
 import { useSelector } from "@xstate/react";
+import type { SendJsonMessage, WebSocketLike } from "react-use-websocket/dist/lib/types";
 
 import type { lobbyMachine } from "./lobby";
 import { handleEvent } from "./events";
-import { lobbyEventSchema, type LobbyEvent } from "./events/lobby";
 
-export function useWebSocket(id: string) {
-  const socket = useRef<WebSocket | null>(null);
-  const [lobby, setLobby] = useState<LobbyEvent | null>(null);
-
-  useEffect(() => {
-    const ws = new WebSocket(`${window.env.websocketUrl}/lobby/${id}`);
-    socket.current = ws;
-
-    const handleMessage = (event: MessageEvent) => {
-      if (typeof event.data !== "string") {
-        console.error("Received a non-string message", event.data);
-        return;
-      }
-
-      try {
-        setLobby(lobbyEventSchema.parse(JSON.parse(event.data)));
-        console.log("[useWebSocket] lobby changed", JSON.parse(event.data));
-        ws.removeEventListener("message", handleMessage);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    ws.addEventListener("message", handleMessage);
-
-    ws.onopen = () => {
-      console.log("[useWebSocket] connected");
-    };
-
-    ws.onclose = () => {
-      console.log("[useWebSocket] disconnected");
-    };
-
-    return () => {
-      ws.removeEventListener("message", handleMessage);
-      ws.close();
-    };
-  }, [id]);
-
-  return [socket.current, lobby] as const;
-}
-
-export function useWebSocketSetup(socket: WebSocket, actorRef: ActorRefFrom<typeof lobbyMachine>) {
+export function useWebSocketSetup(
+  socket: WebSocketLike,
+  sendJsonMessage: SendJsonMessage,
+  actorRef: ActorRefFrom<typeof lobbyMachine>,
+) {
   const state = useSelector(actorRef, (state) => state.value);
 
   useEffect(() => {
@@ -64,14 +27,15 @@ export function useWebSocketSetup(socket: WebSocket, actorRef: ActorRefFrom<type
         console.error(error);
       }
     };
-    socket.addEventListener("message", listener);
+    socket.addEventListener("message", listener as EventListener);
 
     return () => {
-      socket.removeEventListener("message", listener);
+      socket.removeEventListener("message", listener as EventListener);
     };
   }, [socket, actorRef]);
 
   useEffect(() => {
+    console.log("Current state", state);
     if (state !== "disconnected") {
       return;
     }
@@ -81,13 +45,10 @@ export function useWebSocketSetup(socket: WebSocket, actorRef: ActorRefFrom<type
       return;
     }
 
-    console.log("[useWebSocketSetup] registering", username);
-    socket.send(
-      JSON.stringify({
-        type: "register",
-        data: { username },
-      }),
-    );
+    sendJsonMessage({
+      type: "register",
+      data: { username },
+    });
     actorRef.send({ type: "connecting", username: username });
-  }, [socket, state, actorRef]);
+  }, [sendJsonMessage, state, actorRef]);
 }

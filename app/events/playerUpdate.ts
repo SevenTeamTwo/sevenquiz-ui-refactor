@@ -44,7 +44,7 @@ export function handlePlayerUpdateEvent(actorRef: ActorRefFrom<typeof lobbyMachi
       break;
     }
     case "new owner": {
-      actorRef.send({ type: "clientLeft", name: event.data.username });
+      actorRef.send({ type: "newOwner", name: event.data.username });
       break;
     }
     default: {

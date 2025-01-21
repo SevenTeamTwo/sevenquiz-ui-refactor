@@ -7,7 +7,6 @@ export function ThemeSwitcher() {
   const [theme, setTheme] = useTheme();
 
   const onClick = () => {
-    console.log("Setting the theme to", theme === Theme.DARK ? Theme.LIGHT : Theme.DARK);
     setTheme(theme === Theme.DARK ? Theme.LIGHT : Theme.DARK);
   };
 
