@@ -1,14 +1,11 @@
-import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { PreventFlashOnWrongTheme, type Theme, ThemeProvider, useTheme } from "remix-themes";
+import clsx from "clsx";
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
+import { themeSessionResolver } from "./session.server";
+import invariant from "tiny-invariant";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,26 +21,54 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export async function loader({ request }: Route.LoaderArgs) {
+  const { getTheme } = await themeSessionResolver(request);
+
+  invariant(process.env.API_URL, "API_URL environment variable must be set");
+  invariant(process.env.WEBSOCKET_URL, "WEBSOCKET_URL environment variable must be set");
+
+  return {
+    specifiedTheme: getTheme(),
+    env: {
+      apiUrl: process.env.API_URL,
+      websocketUrl: process.env.WEBSOCKET_URL,
+    },
+  };
+}
+
+function App(props: { specifiedTheme: Theme | null; env: Record<string, string> }) {
+  const [theme] = useTheme();
+
   return (
-    <html lang="en">
+    <html lang="en" className={clsx(theme)}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        <PreventFlashOnWrongTheme ssrTheme={Boolean(props.specifiedTheme)} />
         <Links />
       </head>
       <body>
-        {children}
+        <Outlet />
         <ScrollRestoration />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: setting the window.env variable
+          dangerouslySetInnerHTML={{
+            __html: `window.env = ${JSON.stringify(props.env)}`,
+          }}
+        />
         <Scripts />
       </body>
     </html>
   );
 }
 
-export default function App() {
-  return <Outlet />;
+export default function ({ loaderData }: Route.ComponentProps) {
+  return (
+    <ThemeProvider specifiedTheme={loaderData.specifiedTheme} themeAction="/actions/set-theme">
+      <App specifiedTheme={loaderData.specifiedTheme} env={loaderData.env} />
+    </ThemeProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -53,10 +78,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+    details = error.status === 404 ? "The requested page could not be found." : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
