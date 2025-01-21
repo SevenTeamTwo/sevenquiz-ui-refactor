@@ -8,12 +8,18 @@ import { Label } from "~/shadcn/components/label";
 
 interface JoinLobbyCardProps {
   code?: string;
+  onSubmit?: (username: string) => void;
 }
 
-export function JoinLobbyCard({ code }: JoinLobbyCardProps) {
+export function JoinLobbyCard({ code, onSubmit }: JoinLobbyCardProps) {
   return (
     <Card>
-      <Form method="POST" action="/action/join-lobby">
+      <Form
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSubmit?.(event.currentTarget.username.value);
+        }}
+      >
         <CardContent className="pt-6">
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">

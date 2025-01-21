@@ -31,7 +31,7 @@ function Page({ id }: { id: string }) {
   }, [getWebSocket, readyState]);
 
   if (readyState === ReadyState.OPEN && socket !== null && lobby !== null) {
-    return <Lobby socket={socket} lobby={lobby} sendJsonMessage={sendJsonMessage} />;
+    return <Lobby socket={socket} id={id} lobby={lobby} sendJsonMessage={sendJsonMessage} />;
   }
 
   return <div>Connecting...</div>;
