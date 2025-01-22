@@ -14,5 +14,5 @@ export function useLobbyConnection(lobbyId: string) {
     return disconnect;
   }, [connect, disconnect, lobbyId]);
 
-  return { status, initialLobby };
+  return { status, initialLobby } as const;
 }

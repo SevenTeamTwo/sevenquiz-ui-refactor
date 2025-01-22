@@ -2,11 +2,13 @@ import { atom, createStore } from "jotai";
 
 import { type LobbyEvent, lobbyEventSchema } from "~/lobby/events/lobby";
 
+export type SocketStatus = "unconnected" | "connecting" | "connected" | "disconnected";
+
 interface SocketContext {
   socket: WebSocket;
   abortController: AbortController;
   lobbyId: string;
-  state: "connecting" | "connected";
+  state: Exclude<SocketStatus, "unconnected">;
   initialLobby: LobbyEvent | null;
   callbacks: ((message: unknown) => void)[];
 }
@@ -30,7 +32,7 @@ export const connectAtom = atom(null, (get, set, update: { id: string }) => {
   const current = get(socketContextAtom);
 
   if (current !== null) {
-    if (current.lobbyId === update.id) {
+    if (current.lobbyId === update.id && current.state !== "disconnected") {
       return;
     }
 
@@ -44,7 +46,7 @@ export const connectAtom = atom(null, (get, set, update: { id: string }) => {
   socket.addEventListener("open", () => set(updateSocketContext, { state: "connected" }), {
     signal: abortController.signal,
   });
-  socket.addEventListener("close", () => set(socketContextAtom, null), {
+  socket.addEventListener("close", () => set(updateSocketContext, { state: "disconnected", initialLobby: null }), {
     signal: abortController.signal,
   });
   socket.addEventListener(
@@ -91,7 +93,7 @@ export const disconnectAtom = atom(null, (get, set) => {
   set(socketContextAtom, null);
 });
 
-export const statusAtom = atom((get) => get(socketContextAtom)?.state ?? "disconnected");
+export const statusAtom = atom((get) => get(socketContextAtom)?.state ?? "unconnected");
 
 export const lobbyIdAtom = atom((get) => get(socketContextAtom)?.lobbyId ?? null);
 
