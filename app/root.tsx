@@ -41,7 +41,7 @@ function App(props: { specifiedTheme: Theme | null; env: Record<string, string> 
   const [theme] = useTheme();
 
   return (
-    <html lang="en" className={clsx(theme)}>
+    <html lang="en" className={clsx(theme, "bg-background")}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

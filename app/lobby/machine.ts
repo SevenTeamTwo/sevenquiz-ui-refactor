@@ -16,7 +16,10 @@ type LobbyMachineContext = {
 };
 
 type LobbyMachineEvent =
-  | ({ type: "eventUpdateLobby" } & LobbyMachineContext)
+  | ({ type: "eventUpdateLobby" } & Pick<
+      LobbyMachineContext,
+      "created" | "owner" | "players" | "maxPlayers" | "quizzes" | "currentQuiz"
+    >)
   | { type: "eventPlayerJoined"; name: string }
   | { type: "eventPlayerLeft"; name: string }
   | { type: "eventNewOwner"; name: string | null }
@@ -24,7 +27,8 @@ type LobbyMachineEvent =
   | { type: "eventConfigure"; quiz: string }
   | { type: "actionConnect"; username: string }
   | { type: "actionKick"; username: string }
-  | { type: "actionConfigure"; quiz: string };
+  | { type: "actionConfigure"; quiz: string }
+  | { type: "actionStart" };
 
 type LobbyMachineEmitted =
   | { type: "playerJoined"; username: string }
@@ -85,8 +89,12 @@ export const lobbyMachine = setup({
             },
           ],
         },
+        actionStart: {
+          target: "playing",
+        },
       },
     },
+    playing: {},
   },
   on: {
     eventUpdateLobby: {

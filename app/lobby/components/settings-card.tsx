@@ -42,7 +42,11 @@ export function SettingsCard(props: SettingsCardProps) {
         <Input type="text" value={lobby.maxPlayers} disabled={true} className="border rounded px-2 py-1" />
       </CardContent>
       <CardFooter>
-        <Button className="w-full" disabled={lobby.owner !== lobby.username}>
+        <Button
+          className="w-full"
+          disabled={lobby.owner !== lobby.username}
+          onClick={() => props.actor.send({ type: "actionStart" })}
+        >
           Commencer la partie
         </Button>
       </CardFooter>

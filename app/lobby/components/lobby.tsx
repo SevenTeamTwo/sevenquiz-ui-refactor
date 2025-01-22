@@ -4,11 +4,12 @@ import type { ActorRefFrom, StateValueFrom } from "xstate";
 import type { lobbyMachine } from "~/lobby/machine";
 import type { LobbyEvent } from "~/lobby/events/lobby";
 import { useLobbyActor } from "~/lobby/hooks/actor";
+import { useLobbyNotification } from "~/lobby/hooks/notification";
 
 import { Disconnected } from "~/lobby/states/disconnected";
 import { Connecting } from "~/lobby/states/connecting";
 import { Configuring } from "~/lobby/states/configuring";
-import { useLobbyNotification } from "../hooks/notification";
+import { Playing } from "~/lobby/states/playing";
 
 export interface LobbyProps {
   initialLobby: LobbyEvent;
@@ -24,6 +25,7 @@ const states = {
   disconnected: (args) => <Disconnected {...args} />,
   connecting: (args) => <Connecting {...args} />,
   configuring: (args) => <Configuring {...args} />,
+  playing: (_) => <Playing />,
 } as const satisfies States;
 
 export function Lobby(props: LobbyProps) {
