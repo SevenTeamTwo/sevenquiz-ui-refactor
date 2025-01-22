@@ -7,7 +7,7 @@ import { useSelector } from "@xstate/react";
 import sr from "seedrandom";
 
 import { Button } from "~/shadcn/components/button";
-import { Card, CardContent, CardHeader } from "~/shadcn/components/card";
+import { Card, CardContent, CardFooter, CardHeader } from "~/shadcn/components/card";
 
 import type { lobbyMachine } from "~/lobby/machine";
 import { DESCRIPTIONS } from "~/lobby/constants";
@@ -38,30 +38,40 @@ export function PlayerList({ actor }: PlayerListProps) {
   }, [lobbyData]);
 
   return (
-    <Card className="min-w-60">
+    <Card className="min-w-60 flex flex-col">
       <CardHeader>
         <h2 className="font-semibold tracking-wide text-xl">Liste des joueurs</h2>
       </CardHeader>
-      {players.map((player) => (
-        <CardContent key={player.name} className="flex items-center">
-          <img className="h-12 aspect-square rounded-full" src={player.avatar} alt={player.name} />
-          <div className="flex-grow flex flex-col ml-4 justify-center">
-            <p className="font-semibold">{player.name}</p>
-            <p className="text-sm text-muted-foreground">{player.description}</p>
-          </div>
-          {player.name === lobbyData.owner && <Crown className="min-w-6 h-6 aspect-square mr-[6px] text-yellow-400" />}
-          {player.name !== lobbyData.username && lobbyData.username === lobbyData.owner && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-red-400/50 hover:text-red-400"
-              onClick={() => actor.send({ type: "actionKick", username: player.name })}
-            >
-              <X className="text-inherit" />
-            </Button>
-          )}
-        </CardContent>
-      ))}
+      <div className="flex-grow">
+        {players.map((player) => (
+          <CardContent key={player.name} className="flex items-center">
+            <img className="h-12 aspect-square rounded-full" src={player.avatar} alt={player.name} />
+            <div className="flex-grow flex flex-col ml-4 justify-center">
+              <p className="font-semibold">{player.name}</p>
+              <p className="text-sm text-muted-foreground">{player.description}</p>
+            </div>
+            {player.name === lobbyData.owner && (
+              <Crown className="min-w-6 h-6 aspect-square mr-[6px] text-yellow-400" />
+            )}
+            {player.name !== lobbyData.username && lobbyData.username === lobbyData.owner && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-red-400/50 hover:text-red-400"
+                onClick={() => actor.send({ type: "actionKick", username: player.name })}
+              >
+                <X className="text-inherit" />
+              </Button>
+            )}
+          </CardContent>
+        ))}
+      </div>
+      <CardFooter>
+        <p className="w-full text-sm text-muted-foreground text-center">
+          {lobbyData.players.length} joueur{lobbyData.players.length > 1 && "s"} enregistré
+          {lobbyData.players.length > 1 && "s"}
+        </p>
+      </CardFooter>
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import { assign, setup } from "xstate";
+import { assign, emit, setup } from "xstate";
 
 import type { LobbyEvent } from "./events/lobby";
 import { sendAtom, store } from "./websocket";
@@ -26,11 +26,17 @@ type LobbyMachineEvent =
   | { type: "actionKick"; username: string }
   | { type: "actionConfigure"; quiz: string };
 
+type LobbyMachineEmitted =
+  | { type: "playerJoined"; username: string }
+  | { type: "playerLeft"; username: string }
+  | { type: "newOwner"; username: string | null };
+
 export const lobbyMachine = setup({
   types: {
     input: {} as LobbyMachineInput,
     context: {} as LobbyMachineContext,
     events: {} as LobbyMachineEvent,
+    emitted: {} as LobbyMachineEmitted,
   },
 }).createMachine({
   id: "lobby",
@@ -94,19 +100,28 @@ export const lobbyMachine = setup({
       }),
     },
     eventPlayerJoined: {
-      actions: assign({
-        players: ({ context, event }) => [...context.players, event.name],
-      }),
+      actions: [
+        assign({
+          players: ({ context, event }) => [...context.players, event.name],
+        }),
+        emit(({ event }) => ({ type: "playerJoined", username: event.name })),
+      ],
     },
     eventPlayerLeft: {
-      actions: assign({
-        players: ({ context, event }) => context.players.filter((player) => player !== event.name),
-      }),
+      actions: [
+        assign({
+          players: ({ context, event }) => context.players.filter((player) => player !== event.name),
+        }),
+        emit(({ event }) => ({ type: "playerLeft", username: event.name })),
+      ],
     },
     eventNewOwner: {
-      actions: assign({
-        owner: ({ event }) => event.name,
-      }),
+      actions: [
+        assign({
+          owner: ({ event }) => event.name,
+        }),
+        emit(({ event }) => ({ type: "newOwner", username: event.name })),
+      ],
     },
     eventConfigure: {
       actions: assign({

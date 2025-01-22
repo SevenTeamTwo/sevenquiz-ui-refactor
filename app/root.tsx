@@ -1,11 +1,12 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { PreventFlashOnWrongTheme, type Theme, ThemeProvider, useTheme } from "remix-themes";
 import clsx from "clsx";
+import invariant from "tiny-invariant";
 
 import type { Route } from "./+types/root";
-import stylesheet from "./app.css?url";
 import { themeSessionResolver } from "./session.server";
-import invariant from "tiny-invariant";
+import { Toaster } from "~/shadcn/components/toaster";
+import stylesheet from "./app.css?url";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -50,6 +51,7 @@ function App(props: { specifiedTheme: Theme | null; env: Record<string, string> 
       </head>
       <body>
         <Outlet />
+        <Toaster />
         <ScrollRestoration />
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: setting the window.env variable

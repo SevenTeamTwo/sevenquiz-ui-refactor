@@ -8,6 +8,7 @@ import { useLobbyActor } from "~/lobby/hooks/actor";
 import { Disconnected } from "~/lobby/states/disconnected";
 import { Connecting } from "~/lobby/states/connecting";
 import { Configuring } from "~/lobby/states/configuring";
+import { useLobbyNotification } from "../hooks/notification";
 
 export interface LobbyProps {
   initialLobby: LobbyEvent;
@@ -28,5 +29,7 @@ const states = {
 export function Lobby(props: LobbyProps) {
   const actor = useLobbyActor(props.initialLobby, props.id);
   const state = useSelector(actor, (state) => state.value);
+  useLobbyNotification(actor);
+
   return states[state]({ actor, lobbyId: props.id });
 }
