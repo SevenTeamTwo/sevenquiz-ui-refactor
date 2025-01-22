@@ -9,11 +9,7 @@ import { retrieveUsername } from "../utils";
 
 export function useLobbySetup(socket: WebSocket, initialLobby: LobbyEvent, id: string) {
   const actorRef = useActorRef(lobbyMachine, {
-    input: {
-      created: initialLobby.data.created,
-      players: initialLobby.data.playerList,
-      owner: initialLobby.data.owner,
-    },
+    input: initialLobby,
   });
   const state = useSelector(actorRef, (state) => state.value);
 

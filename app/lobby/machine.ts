@@ -1,20 +1,29 @@
 import { assign, setup } from "xstate";
 
-type LobbyMachineInput = {
-  owner: string | null;
-  players: string[];
-  created: Date;
-};
+import type { LobbyEvent } from "./events/lobby";
+
+type LobbyMachineInput = LobbyEvent;
 
 type LobbyMachineContext = {
   username: string;
+  created: Date;
   owner: string | null;
   players: string[];
-  created: Date;
+  maxPlayers: number;
+  quizzes: string[];
+  currentQuiz: string;
 };
 
 type LobbyMachineEvent =
-  | { type: "updateLobby"; owner: string | null; players: string[]; created: Date }
+  | {
+      type: "updateLobby";
+      created: Date;
+      owner: string | null;
+      players: string[];
+      maxPlayers: number;
+      quizzes: string[];
+      currentQuiz: string;
+    }
   | { type: "clientJoined"; name: string }
   | { type: "clientLeft"; name: string }
   | { type: "connecting"; username: string }
@@ -32,9 +41,12 @@ export const lobbyMachine = setup({
   id: "lobby",
   context: ({ input }) => ({
     username: "",
-    owner: input.owner,
-    players: [...input.players],
-    created: input.created,
+    owner: input.data.owner,
+    players: input.data.playerList,
+    maxPlayers: input.data.maxPlayers,
+    quizzes: input.data.quizzes,
+    currentQuiz: input.data.currentQuiz,
+    created: input.data.created,
   }),
   initial: "disconnected",
   states: {
@@ -60,9 +72,12 @@ export const lobbyMachine = setup({
   on: {
     updateLobby: {
       actions: assign({
+        created: ({ event }) => event.created,
         owner: ({ event }) => event.owner,
         players: ({ event }) => event.players,
-        created: ({ event }) => event.created,
+        maxPlayers: ({ event }) => event.maxPlayers,
+        quizzes: ({ event }) => event.quizzes,
+        currentQuiz: ({ event }) => event.currentQuiz,
       }),
     },
     clientJoined: {

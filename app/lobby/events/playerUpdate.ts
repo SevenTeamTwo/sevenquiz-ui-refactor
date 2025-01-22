@@ -1,7 +1,7 @@
 import type { ActorRefFrom } from "xstate";
 import { z } from "zod";
 
-import type { lobbyMachine } from "~/lobby";
+import type { lobbyMachine } from "~/lobby/machine";
 
 /**
  * PlayerUpdate event schema

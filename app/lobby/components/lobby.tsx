@@ -2,6 +2,7 @@ import { useSelector } from "@xstate/react";
 
 import { JoinLobbyCard } from "~/lobby/components/join-lobby-card";
 import { PlayerList } from "~/lobby/components/player-list";
+import { SettingsCard } from "~/lobby/components/settings-card";
 import type { LobbyEvent } from "~/lobby/events/lobby";
 import { useLobbySetup } from "~/lobby/hooks/setup";
 import { register } from "~/lobby/actions/register";
@@ -30,6 +31,7 @@ export function Lobby(props: LobbyProps) {
           }}
         />
       )}
+      {state === "connected" && <SettingsCard actorRef={actorRef} />}
     </div>
   );
 }

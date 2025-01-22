@@ -1,7 +1,7 @@
 import type { ActorRefFrom } from "xstate";
 import { z } from "zod";
 
-import type { lobbyMachine } from "~/lobby";
+import type { lobbyMachine } from "~/lobby/machine";
 
 /**
  * Lobby event schema
@@ -39,5 +39,8 @@ export function handleLobbyEvent(actorRef: ActorRefFrom<typeof lobbyMachine>, ev
     created: event.data.created,
     owner: event.data.owner,
     players: event.data.playerList,
+    maxPlayers: event.data.maxPlayers,
+    quizzes: event.data.quizzes,
+    currentQuiz: event.data.currentQuiz,
   });
 }
