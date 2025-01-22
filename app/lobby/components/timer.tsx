@@ -11,17 +11,16 @@ export function Timer(props: TimerProps) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setRemaining(() => {
-        const remaining = Math.max(0, props.duration - (Date.now() - start.current) / 1000);
-        if (remaining === 0) {
-          clearInterval(interval);
-          props.onTimeout();
-        }
-        return remaining;
-      });
+      setRemaining(() => Math.max(0, props.duration - (Date.now() - start.current) / 1000));
     }, 10);
     return () => clearInterval(interval);
-  }, [props.duration, props.onTimeout]);
+  }, [props.duration]);
+
+  useEffect(() => {
+    if (remaining === 0) {
+      props.onTimeout();
+    }
+  }, [remaining, props.onTimeout]);
 
   return (
     <div className="relative w-16 h-16">
