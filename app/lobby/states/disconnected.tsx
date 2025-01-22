@@ -13,7 +13,10 @@ export function Disconnected(props: DisconnectedProps) {
   return (
     <div className="flex-grow grid grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4">
       <PlayerList actor={props.actor} />
-      <JoinLobbyCard code={props.lobbyId} onSubmit={(_, username) => props.actor.send({ type: "connect", username })} />
+      <JoinLobbyCard
+        code={props.lobbyId}
+        onSubmit={(_, username) => props.actor.send({ type: "actionConnect", username })}
+      />
     </div>
   );
 }

@@ -28,7 +28,7 @@ export function useLobbyActor(initialLobby: LobbyEvent, id: string) {
     const username = retrieveUsername(id);
     if (username !== null) {
       removeUsername(id);
-      actor.send({ type: "connect", username });
+      actor.send({ type: "actionConnect", username });
     }
   });
 

@@ -16,21 +16,15 @@ type LobbyMachineContext = {
 };
 
 type LobbyMachineEvent =
-  | {
-      type: "updateLobby";
-      created: Date;
-      owner: string | null;
-      players: string[];
-      maxPlayers: number;
-      quizzes: string[];
-      currentQuiz: string;
-    }
-  | { type: "playerJoined"; name: string }
-  | { type: "playerLeft"; name: string }
-  | { type: "newOwner"; name: string | null }
-  | { type: "registered" }
-  | { type: "connect"; username: string }
-  | { type: "kick"; username: string };
+  | ({ type: "eventUpdateLobby" } & LobbyMachineContext)
+  | { type: "eventPlayerJoined"; name: string }
+  | { type: "eventPlayerLeft"; name: string }
+  | { type: "eventNewOwner"; name: string | null }
+  | { type: "eventRegistered" }
+  | { type: "eventConfigure"; quiz: string }
+  | { type: "actionConnect"; username: string }
+  | { type: "actionKick"; username: string }
+  | { type: "actionConfigure"; quiz: string };
 
 export const lobbyMachine = setup({
   types: {
@@ -53,7 +47,7 @@ export const lobbyMachine = setup({
   states: {
     disconnected: {
       on: {
-        connect: {
+        actionConnect: {
           actions: assign(({ event }) => {
             store.set(sendAtom, { type: "register", data: { username: event.username } });
             return { username: event.username };
@@ -64,17 +58,24 @@ export const lobbyMachine = setup({
     },
     connecting: {
       on: {
-        registered: {
+        eventRegistered: {
           target: "configuring",
         },
       },
     },
     configuring: {
       on: {
-        kick: {
+        actionKick: {
           actions: [
             ({ event }) => {
               store.set(sendAtom, { type: "kick", data: { username: event.username } });
+            },
+          ],
+        },
+        actionConfigure: {
+          actions: [
+            ({ event }) => {
+              store.set(sendAtom, { type: "configure", data: { quiz: event.quiz } });
             },
           ],
         },
@@ -82,7 +83,7 @@ export const lobbyMachine = setup({
     },
   },
   on: {
-    updateLobby: {
+    eventUpdateLobby: {
       actions: assign({
         created: ({ event }) => event.created,
         owner: ({ event }) => event.owner,
@@ -92,19 +93,24 @@ export const lobbyMachine = setup({
         currentQuiz: ({ event }) => event.currentQuiz,
       }),
     },
-    playerJoined: {
+    eventPlayerJoined: {
       actions: assign({
         players: ({ context, event }) => [...context.players, event.name],
       }),
     },
-    playerLeft: {
+    eventPlayerLeft: {
       actions: assign({
         players: ({ context, event }) => context.players.filter((player) => player !== event.name),
       }),
     },
-    newOwner: {
+    eventNewOwner: {
       actions: assign({
         owner: ({ event }) => event.name,
+      }),
+    },
+    eventConfigure: {
+      actions: assign({
+        currentQuiz: ({ event }) => event.quiz,
       }),
     },
   },

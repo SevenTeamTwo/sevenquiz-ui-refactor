@@ -35,7 +35,7 @@ export type LobbyEvent = z.infer<typeof lobbyEventSchema>;
  */
 export function handleLobbyEvent(actor: ActorRefFrom<typeof lobbyMachine>, event: LobbyEvent) {
   actor.send({
-    type: "updateLobby",
+    type: "eventUpdateLobby",
     created: event.data.created,
     owner: event.data.owner,
     players: event.data.playerList,

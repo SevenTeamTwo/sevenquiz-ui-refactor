@@ -7,11 +7,12 @@ import { lobbyEventSchema, handleLobbyEvent } from "./events/lobby";
 import { registerEventSchema, handleRegisterEvent } from "./events/register";
 import { errorEventSchema, handleErrorEvent } from "./events/error";
 import { handleKickEvent, kickEventSchema } from "./events/kick";
+import { configureEventSchema, handleConfigureEvent } from "./events/configure";
 
 /**
  * List of event types
  */
-const eventTypes = ["lobby", "playerUpdate", "register", "kick", "error"] as const;
+const eventTypes = ["lobby", "playerUpdate", "register", "kick", "configure", "error"] as const;
 
 /**
  * Base event schema
@@ -36,6 +37,7 @@ const eventHandlers = {
   register: (actor, event) => handleRegisterEvent(actor, registerEventSchema.parse(event)),
   kick: (actor, event) => handleKickEvent(actor, kickEventSchema.parse(event)),
   error: (actor, event) => handleErrorEvent(actor, errorEventSchema.parse(event)),
+  configure: (actor, event) => handleConfigureEvent(actor, configureEventSchema.parse(event)),
 } as const satisfies EventHandlers;
 
 /**

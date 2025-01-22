@@ -21,7 +21,11 @@ export function SettingsCard(props: SettingsCardProps) {
       </CardHeader>
       <CardContent className="flex flex-col">
         <Label className="mb-1 font-semibold">Quiz</Label>
-        <Select value={lobby.currentQuiz} disabled={lobby.owner !== lobby.username}>
+        <Select
+          value={lobby.currentQuiz}
+          disabled={lobby.owner !== lobby.username}
+          onValueChange={(value) => props.actor.send({ type: "actionConfigure", quiz: value })}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Quiz" />
           </SelectTrigger>

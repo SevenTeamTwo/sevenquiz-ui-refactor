@@ -22,5 +22,5 @@ export type RegisterEvent = z.infer<typeof registerEventSchema>;
  * @param event the event
  */
 export function handleRegisterEvent(actor: ActorRefFrom<typeof lobbyMachine>, _event: RegisterEvent) {
-  actor.send({ type: "registered" });
+  actor.send({ type: "eventRegistered" });
 }

@@ -23,7 +23,7 @@ export type ErrorEvent = z.infer<typeof errorEventSchema>;
 /**
  * Handle an error event
  *
- * @param actorRef the actor
+ * @param actor the actor
  * @param event the event
  */
 export function handleErrorEvent(_actor: ActorRefFrom<typeof lobbyMachine>, event: ErrorEvent) {

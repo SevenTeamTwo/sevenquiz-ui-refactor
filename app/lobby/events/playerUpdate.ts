@@ -35,16 +35,16 @@ export function handlePlayerUpdateEvent(actor: ActorRefFrom<typeof lobbyMachine>
   switch (event.data.action) {
     case "join":
     case "reconnect": {
-      actor.send({ type: "playerJoined", name: event.data.username });
+      actor.send({ type: "eventPlayerJoined", name: event.data.username });
       break;
     }
     case "disconnect":
     case "kick": {
-      actor.send({ type: "playerLeft", name: event.data.username });
+      actor.send({ type: "eventPlayerLeft", name: event.data.username });
       break;
     }
     case "new owner": {
-      actor.send({ type: "newOwner", name: event.data.username });
+      actor.send({ type: "eventNewOwner", name: event.data.username });
       break;
     }
     default: {

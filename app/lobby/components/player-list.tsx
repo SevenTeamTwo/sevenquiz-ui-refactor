@@ -55,7 +55,7 @@ export function PlayerList({ actor }: PlayerListProps) {
               variant="ghost"
               size="icon"
               className="text-red-400/50 hover:text-red-400"
-              onClick={() => actor.send({ type: "kick", username: player.name })}
+              onClick={() => actor.send({ type: "actionKick", username: player.name })}
             >
               <X className="text-inherit" />
             </Button>
