@@ -32,6 +32,7 @@
         "noDefaultExport": "off"
       },
       "suspicious": {
+        "noArrayIndexKey": "off",
         "noReactSpecificProps": "off",
         "noConsole": "off",
         "noConsoleLog": "off"

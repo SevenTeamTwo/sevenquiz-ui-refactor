@@ -8,16 +8,23 @@ interface SocketContext {
   lobbyId: string;
   state: "connecting" | "connected";
   initialLobby: LobbyEvent | null;
-  callback: ((message: unknown) => void) | null;
+  callbacks: ((message: unknown) => void)[];
 }
 
 export const store = createStore();
 
 const socketContextAtom = atom<SocketContext | null>(null);
 
-const updateSocketContext = atom(null, (_, set, update: Partial<SocketContext>) => {
-  set(socketContextAtom, (prev) => (prev === null ? null : { ...prev, ...update }));
-});
+const updateSocketContext = atom(
+  null,
+  (_, set, update: Partial<SocketContext> | ((ctx: SocketContext) => Partial<SocketContext>)) => {
+    if (typeof update === "function") {
+      set(socketContextAtom, (prev) => (prev === null ? null : { ...prev, ...update(prev) }));
+    } else {
+      set(socketContextAtom, (prev) => (prev === null ? null : { ...prev, ...update }));
+    }
+  },
+);
 
 export const connectAtom = atom(null, (get, set, update: { id: string }) => {
   const current = get(socketContextAtom);
@@ -49,7 +56,7 @@ export const connectAtom = atom(null, (get, set, update: { id: string }) => {
 
       try {
         const message = JSON.parse(event.data);
-        get(socketContextAtom)?.callback?.(message);
+        set(receiveAtom, message);
 
         if (!receivedInitialLobby) {
           set(updateSocketContext, { initialLobby: lobbyEventSchema.parse(message) });
@@ -68,7 +75,7 @@ export const connectAtom = atom(null, (get, set, update: { id: string }) => {
     lobbyId: update.id,
     state: "connecting",
     initialLobby: null,
-    callback: null,
+    callbacks: [],
   });
 });
 
@@ -90,13 +97,30 @@ export const lobbyIdAtom = atom((get) => get(socketContextAtom)?.lobbyId ?? null
 
 export const initialLobbyAtom = atom((get) => get(socketContextAtom)?.initialLobby ?? null);
 
-export const setCallbackAtom = atom(null, (_, set, update: ((message: unknown) => void) | null) =>
-  set(updateSocketContext, { callback: update }),
+export const addCallbackAtom = atom(null, (_, set, update: (message: unknown) => void) =>
+  set(updateSocketContext, (prev) => ({
+    callbacks: [...prev.callbacks, update],
+  })),
+);
+
+export const removeCallbackAtom = atom(null, (_, set, update: (message: unknown) => void) =>
+  set(updateSocketContext, (prev) => ({
+    callbacks: prev.callbacks.filter((callback) => callback !== update),
+  })),
 );
 
 export const sendAtom = atom(null, (get, _, update: unknown) => {
   const current = get(socketContextAtom);
   if (current !== null && current.state === "connected") {
     current.socket.send(JSON.stringify(update));
+  }
+});
+
+export const receiveAtom = atom(null, (get, _, update: unknown) => {
+  const current = get(socketContextAtom);
+  if (current !== null && current.state === "connected") {
+    for (const callback of current.callbacks) {
+      callback(update);
+    }
   }
 });
