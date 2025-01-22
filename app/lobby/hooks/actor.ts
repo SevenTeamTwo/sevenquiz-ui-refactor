@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useSetAtom } from "jotai";
 
 import { lobbyMachine } from "~/lobby/machine";
-import { retrieveUsername } from "~/lobby/utils";
+import { removeUsername, retrieveUsername } from "~/lobby/utils";
 import { handleEvent } from "~/lobby/events";
 import type { LobbyEvent } from "~/lobby/events/lobby";
 import { addCallbackAtom, removeCallbackAtom } from "~/lobby/websocket";
@@ -27,6 +27,7 @@ export function useLobbyActor(initialLobby: LobbyEvent, id: string) {
 
     const username = retrieveUsername(id);
     if (username !== null) {
+      removeUsername(id);
       actor.send({ type: "connect", username });
     }
   });

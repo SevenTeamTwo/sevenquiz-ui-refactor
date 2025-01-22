@@ -11,31 +11,25 @@ interface JoinLobbyCardProps {
   onSubmit?: (code: string, username: string) => void;
 }
 
-export function JoinLobbyCard({ code, onSubmit }: JoinLobbyCardProps) {
+export function JoinLobbyCard(props: JoinLobbyCardProps) {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    props.onSubmit?.(
+      props.code ?? (event.currentTarget.code.value as string),
+      event.currentTarget.username.value as string,
+    );
+  };
+
   return (
     <Card>
-      <Form
-        onSubmit={
-          code
-            ? (event) => {
-                event.preventDefault();
-                onSubmit?.(
-                  code ?? (event.currentTarget.code.value as string),
-                  event.currentTarget.username.value as string,
-                );
-              }
-            : undefined
-        }
-        method="POST"
-        action="/actions/join-lobby"
-      >
+      <Form onSubmit={props.code ? onSubmit : undefined} method="POST" action="/actions/join-lobby">
         <CardContent className="pt-6">
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="username">Pseudonyme</Label>
               <Input name="username" id="username" placeholder="Sylvain du drift" />
             </div>
-            <div className={clsx("flex flex-col space-y-1.5", code && "hidden")}>
+            <div className={clsx("flex flex-col space-y-1.5", props.code && "hidden")}>
               <Label htmlFor="username">Code</Label>
               <Input name="code" id="code" placeholder="XFCE5" />
             </div>

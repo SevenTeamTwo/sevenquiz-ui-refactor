@@ -25,12 +25,12 @@ type LobbyMachineEvent =
       quizzes: string[];
       currentQuiz: string;
     }
-  | { type: "clientJoined"; name: string }
-  | { type: "clientLeft"; name: string }
+  | { type: "playerJoined"; name: string }
+  | { type: "playerLeft"; name: string }
+  | { type: "newOwner"; name: string | null }
+  | { type: "registered" }
   | { type: "connect"; username: string }
-  | { type: "connected" }
-  | { type: "disconnect" }
-  | { type: "newOwner"; name: string | null };
+  | { type: "kick"; username: string };
 
 export const lobbyMachine = setup({
   types: {
@@ -56,9 +56,7 @@ export const lobbyMachine = setup({
         connect: {
           actions: assign(({ event }) => {
             store.set(sendAtom, { type: "register", data: { username: event.username } });
-            return {
-              username: event.username,
-            };
+            return { username: event.username };
           }),
           target: "connecting",
         },
@@ -66,12 +64,22 @@ export const lobbyMachine = setup({
     },
     connecting: {
       on: {
-        connected: {
-          target: "connected",
+        registered: {
+          target: "configuring",
         },
       },
     },
-    connected: {},
+    configuring: {
+      on: {
+        kick: {
+          actions: [
+            ({ event }) => {
+              store.set(sendAtom, { type: "kick", data: { username: event.username } });
+            },
+          ],
+        },
+      },
+    },
   },
   on: {
     updateLobby: {
@@ -84,12 +92,12 @@ export const lobbyMachine = setup({
         currentQuiz: ({ event }) => event.currentQuiz,
       }),
     },
-    clientJoined: {
+    playerJoined: {
       actions: assign({
         players: ({ context, event }) => [...context.players, event.name],
       }),
     },
-    clientLeft: {
+    playerLeft: {
       actions: assign({
         players: ({ context, event }) => context.players.filter((player) => player !== event.name),
       }),
@@ -97,12 +105,6 @@ export const lobbyMachine = setup({
     newOwner: {
       actions: assign({
         owner: ({ event }) => event.name,
-      }),
-    },
-    disconnect: {
-      target: ".disconnected",
-      actions: assign({
-        username: "",
       }),
     },
   },

@@ -13,12 +13,11 @@ import type { lobbyMachine } from "~/lobby/machine";
 import { DESCRIPTIONS } from "~/lobby/constants";
 
 export interface PlayerListProps {
-  actorRef: ActorRefFrom<typeof lobbyMachine>;
-  onKick: (player: string) => void;
+  actor: ActorRefFrom<typeof lobbyMachine>;
 }
 
-export function PlayerList({ actorRef, onKick }: PlayerListProps) {
-  const lobbyData = useSelector(actorRef, (state) => ({
+export function PlayerList({ actor }: PlayerListProps) {
+  const lobbyData = useSelector(actor, (state) => ({
     username: state.context.username,
     owner: state.context.owner,
     created: state.context.created,
@@ -56,7 +55,7 @@ export function PlayerList({ actorRef, onKick }: PlayerListProps) {
               variant="ghost"
               size="icon"
               className="text-red-400/50 hover:text-red-400"
-              onClick={() => onKick(player.name)}
+              onClick={() => actor.send({ type: "kick", username: player.name })}
             >
               <X className="text-inherit" />
             </Button>

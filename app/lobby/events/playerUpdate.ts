@@ -28,23 +28,23 @@ export type PlayerUpdateEvent = z.infer<typeof playerUpdateEventSchema>;
 /**
  * Handle a player update event
  *
- * @param actorRef the actor reference
+ * @param actor the actor
  * @param event the event
  */
-export function handlePlayerUpdateEvent(actorRef: ActorRefFrom<typeof lobbyMachine>, event: PlayerUpdateEvent) {
+export function handlePlayerUpdateEvent(actor: ActorRefFrom<typeof lobbyMachine>, event: PlayerUpdateEvent) {
   switch (event.data.action) {
     case "join":
     case "reconnect": {
-      actorRef.send({ type: "clientJoined", name: event.data.username });
+      actor.send({ type: "playerJoined", name: event.data.username });
       break;
     }
     case "disconnect":
     case "kick": {
-      actorRef.send({ type: "clientLeft", name: event.data.username });
+      actor.send({ type: "playerLeft", name: event.data.username });
       break;
     }
     case "new owner": {
-      actorRef.send({ type: "newOwner", name: event.data.username });
+      actor.send({ type: "newOwner", name: event.data.username });
       break;
     }
     default: {

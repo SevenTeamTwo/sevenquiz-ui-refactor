@@ -32,6 +32,7 @@
         "noDefaultExport": "off"
       },
       "suspicious": {
+        "noEmptyBlockStatements": "off",
         "noArrayIndexKey": "off",
         "noReactSpecificProps": "off",
         "noConsole": "off",

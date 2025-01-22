@@ -1,14 +1,14 @@
 import { Link, useParams } from "react-router";
 
 import { ThemeSwitcher } from "~/components/theme-switcher";
-import { WebSocketIndicator } from "~/components/websocket-indicator";
+import { WebSocketIndicator } from "~/lobby/components/websocket-indicator";
 
 export function Header() {
   const params = useParams();
 
   return (
     <header className="sticky top-0 z-10 border-b bg-background/75 backdrop-blur">
-      <div className="max-w-6xl mx-auto px-6 py-4 h-16 flex items-center">
+      <div className="max-w-7xl mx-auto px-6 py-4 h-16 flex items-center">
         <Link to="/" className="font-bold text-xl">
           <h1>SevenQuiz</h1>
         </Link>

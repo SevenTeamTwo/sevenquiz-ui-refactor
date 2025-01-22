@@ -11,7 +11,7 @@ export default function () {
     <Provider store={store}>
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-grow w-full max-w-6xl mx-auto px-6 py-4 flex flex-col">
+        <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-4 flex flex-col">
           <Outlet />
         </main>
         <Footer />

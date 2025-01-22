@@ -8,11 +8,11 @@ import { Input } from "~/shadcn/components/input";
 import type { lobbyMachine } from "~/lobby/machine";
 
 export interface SettingsCardProps {
-  actorRef: ActorRefFrom<typeof lobbyMachine>;
+  actor: ActorRefFrom<typeof lobbyMachine>;
 }
 
 export function SettingsCard(props: SettingsCardProps) {
-  const lobby = useSelector(props.actorRef, (state) => state.context);
+  const lobby = useSelector(props.actor, (state) => state.context);
 
   return (
     <Card>

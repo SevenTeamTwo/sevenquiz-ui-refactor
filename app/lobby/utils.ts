@@ -30,3 +30,16 @@ export function saveUsername(lobby: string, username: string) {
     localStorage.setItem("usernames", JSON.stringify({ [lobby]: username }));
   }
 }
+
+export function removeUsername(lobby: string) {
+  const cache = localStorage.getItem("usernames");
+  if (cache) {
+    try {
+      const data = usernamesCache.parse(JSON.parse(cache));
+      delete data[lobby];
+      localStorage.setItem("usernames", JSON.stringify(data));
+    } catch {
+      localStorage.setItem("usernames", JSON.stringify({}));
+    }
+  }
+}
