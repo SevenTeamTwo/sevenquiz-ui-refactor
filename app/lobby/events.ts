@@ -5,7 +5,7 @@ import { playerUpdateEventSchema, handlePlayerUpdateEvent } from "./events/playe
 import { lobbyEventSchema, handleLobbyEvent } from "./events/lobby";
 import { registerEventSchema, handleRegisterEvent } from "./events/register";
 import { errorEventSchema, handleErrorEvent } from "./events/error";
-import type { lobbyMachine } from "./lobby";
+import type { lobbyMachine } from "~/lobby/machine";
 
 const types = ["lobby", "playerUpdate", "register", "error"] as const;
 

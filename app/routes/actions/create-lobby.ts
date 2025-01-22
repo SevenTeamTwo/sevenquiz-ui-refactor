@@ -2,6 +2,7 @@ import { redirect } from "react-router";
 
 import type { Route } from "./+types/create-lobby";
 import { createLobby } from "~/api/create-lobby";
+import { saveUsername } from "~/lobby/utils";
 
 export async function clientAction({ request }: Route.ClientLoaderArgs) {
   const data = await request.formData();
@@ -11,10 +12,11 @@ export async function clientAction({ request }: Route.ClientLoaderArgs) {
     return redirect(`/?${new URLSearchParams({ error: "Username is required" })}`);
   }
 
-  localStorage.setItem("username", username);
-
   return (await createLobby()).match(
-    ({ id }) => redirect(`/lobby/${id}`),
+    ({ id }) => {
+      saveUsername(id, username);
+      return redirect(`/lobby/${id}`);
+    },
     ({ message }) => redirect(`/?${new URLSearchParams({ error: message })}`),
   );
 }

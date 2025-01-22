@@ -1,5 +1,5 @@
-import { CreateLobbyCard } from "~/components/create-lobby-card";
-import { JoinLobbyCard } from "~/components/join-lobby-card";
+import { CreateLobbyCard } from "~/lobby/components/create-lobby-card";
+import { JoinLobbyCard } from "~/lobby/components/join-lobby-card";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/shadcn/components/tabs";
 

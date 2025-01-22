@@ -9,14 +9,15 @@ import sr from "seedrandom";
 import { Button } from "~/shadcn/components/button";
 import { Card, CardContent, CardHeader } from "~/shadcn/components/card";
 
-import type { lobbyMachine } from "~/lobby";
-import { DESCRIPTIONS } from "~/constants";
+import type { lobbyMachine } from "~/lobby/machine";
+import { DESCRIPTIONS } from "~/lobby/constants";
 
 export interface PlayerListProps {
   actorRef: ActorRefFrom<typeof lobbyMachine>;
+  onKick: (player: string) => void;
 }
 
-export function PlayerList({ actorRef }: PlayerListProps) {
+export function PlayerList({ actorRef, onKick }: PlayerListProps) {
   const lobbyData = useSelector(actorRef, (state) => ({
     username: state.context.username,
     owner: state.context.owner,
@@ -51,7 +52,12 @@ export function PlayerList({ actorRef }: PlayerListProps) {
           </div>
           {player.name === lobbyData.owner && <Crown className="min-w-6 h-6 aspect-square mr-[6px] text-yellow-400" />}
           {player.name !== lobbyData.username && lobbyData.username === lobbyData.owner && (
-            <Button variant="ghost" size="icon" className="text-red-400/50 hover:text-red-400">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-red-400/50 hover:text-red-400"
+              onClick={() => onKick(player.name)}
+            >
               <X className="text-inherit" />
             </Button>
           )}

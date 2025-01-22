@@ -1,7 +1,7 @@
 import type { Route } from "./+types/main.index";
 
 import { Hero } from "~/components/hero";
-import { CreateJoinLobbyTabs } from "~/components/create-join-lobby-card";
+import { CreateJoinLobbyTabs } from "~/lobby/components/create-join-lobby-card";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "SevenQuiz" }, { name: "description", content: "Welcome to SevenQuiz!" }];
