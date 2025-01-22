@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { ThemeSwitcher } from "~/components/theme-switcher";
+import { WebSocketIndicator } from "~/components/websocket-indicator";
 
 export function Header() {
   return (
@@ -10,6 +11,7 @@ export function Header() {
           <h1>SevenQuiz</h1>
         </Link>
         <div className="flex-grow flex justify-end space-x-4">
+          <WebSocketIndicator />
           <ThemeSwitcher />
         </div>
       </div>
