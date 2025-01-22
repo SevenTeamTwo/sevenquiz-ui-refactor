@@ -5,5 +5,6 @@ export default [
   ...prefix("actions", [
     route("set-theme", "routes/actions/set-theme.ts"),
     route("create-lobby", "routes/actions/create-lobby.ts"),
+    route("join-lobby", "routes/actions/join-lobby.ts"),
   ]),
 ] satisfies RouteConfig;

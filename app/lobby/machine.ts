@@ -1,6 +1,7 @@
 import { assign, setup } from "xstate";
 
 import type { LobbyEvent } from "./events/lobby";
+import { sendAtom, store } from "./websocket";
 
 type LobbyMachineInput = LobbyEvent;
 
@@ -26,7 +27,7 @@ type LobbyMachineEvent =
     }
   | { type: "clientJoined"; name: string }
   | { type: "clientLeft"; name: string }
-  | { type: "connecting"; username: string }
+  | { type: "connect"; username: string }
   | { type: "connected" }
   | { type: "disconnect" }
   | { type: "newOwner"; name: string | null };
@@ -52,10 +53,13 @@ export const lobbyMachine = setup({
   states: {
     disconnected: {
       on: {
-        connecting: {
-          actions: assign(({ event }) => ({
-            username: event.username,
-          })),
+        connect: {
+          actions: assign(({ event }) => {
+            store.set(sendAtom, { type: "register", data: { username: event.username } });
+            return {
+              username: event.username,
+            };
+          }),
           target: "connecting",
         },
       },

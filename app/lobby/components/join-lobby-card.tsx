@@ -7,18 +7,27 @@ import { Input } from "~/shadcn/components/input";
 import { Label } from "~/shadcn/components/label";
 
 interface JoinLobbyCardProps {
-  code?: string;
-  onSubmit?: (username: string) => void;
+  code?: string | null;
+  onSubmit?: (code: string, username: string) => void;
 }
 
 export function JoinLobbyCard({ code, onSubmit }: JoinLobbyCardProps) {
   return (
     <Card>
       <Form
-        onSubmit={(event) => {
-          event.preventDefault();
-          onSubmit?.(event.currentTarget.username.value);
-        }}
+        onSubmit={
+          code
+            ? (event) => {
+                event.preventDefault();
+                onSubmit?.(
+                  code ?? (event.currentTarget.code.value as string),
+                  event.currentTarget.username.value as string,
+                );
+              }
+            : undefined
+        }
+        method="POST"
+        action="/actions/join-lobby"
       >
         <CardContent className="pt-6">
           <div className="grid w-full items-center gap-4">
@@ -28,7 +37,7 @@ export function JoinLobbyCard({ code, onSubmit }: JoinLobbyCardProps) {
             </div>
             <div className={clsx("flex flex-col space-y-1.5", code && "hidden")}>
               <Label htmlFor="username">Code</Label>
-              <Input name="code" id="code" placeholder="XFCE5" value={code} readOnly={!!code} />
+              <Input name="code" id="code" placeholder="XFCE5" />
             </div>
           </div>
         </CardContent>
