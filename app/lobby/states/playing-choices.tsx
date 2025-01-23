@@ -5,10 +5,9 @@ import { Card } from "~/shadcn/components/card";
 import { Timer } from "~/lobby/components/timer";
 
 export interface PlayingChoicesProps {
-  question: string;
+  title: string;
   choices: string[];
   duration: number;
-  onTimeout: () => void;
 }
 
 export function PlayingChoices(props: PlayingChoicesProps) {
@@ -16,9 +15,9 @@ export function PlayingChoices(props: PlayingChoicesProps) {
 
   return (
     <div className="flex-grow grid grid-rows-[auto,3fr,7fr] place-items-center gap-2 md:gap-6 p-6">
-      <Timer duration={props.duration} onTimeout={props.onTimeout} />
+      <Timer duration={props.duration} />
       <div className="text-center">
-        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight">{props.question}</h2>
+        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight">{props.title}</h2>
         <p className="text-muted-foreground text-sm">Une seule réponse est attendue</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">

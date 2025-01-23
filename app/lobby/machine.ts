@@ -1,9 +1,25 @@
-import { assign, emit, setup } from "xstate";
+import { createContext } from "react";
+import { assign, emit, setup, type ActorRefFrom } from "xstate";
 
 import type { LobbyEvent } from "./events/lobby";
 import { sendAtom, store } from "./websocket";
 
 type LobbyMachineInput = LobbyEvent;
+
+export type Question =
+  | {
+      id: number;
+      type: "choices";
+      title: string;
+      choices: string[];
+      duration: number;
+    }
+  | {
+      id: number;
+      type: "text";
+      title: string;
+      duration: number;
+    };
 
 type LobbyMachineContext = {
   username: string;
@@ -13,6 +29,7 @@ type LobbyMachineContext = {
   maxPlayers: number;
   quizzes: string[];
   currentQuiz: string;
+  currentQuestion: Question | null;
 };
 
 type LobbyMachineEvent =
@@ -25,10 +42,13 @@ type LobbyMachineEvent =
   | { type: "eventNewOwner"; name: string | null }
   | { type: "eventRegistered" }
   | { type: "eventConfigure"; quiz: string }
+  | { type: "eventStart" }
+  | { type: "eventNextQuestion"; question: Question }
   | { type: "actionConnect"; username: string }
   | { type: "actionKick"; username: string }
   | { type: "actionConfigure"; quiz: string }
-  | { type: "actionStart" };
+  | { type: "actionStart" }
+  | { type: "actionAnswerText"; answer: string };
 
 type LobbyMachineEmitted =
   | { type: "playerJoined"; username: string }
@@ -52,6 +72,7 @@ export const lobbyMachine = setup({
     quizzes: input.data.quizzes,
     currentQuiz: input.data.currentQuiz,
     created: input.data.created,
+    currentQuestion: null,
   }),
   initial: "disconnected",
   states: {
@@ -76,25 +97,31 @@ export const lobbyMachine = setup({
     configuring: {
       on: {
         actionKick: {
-          actions: [
-            ({ event }) => {
-              store.set(sendAtom, { type: "kick", data: { username: event.username } });
-            },
-          ],
+          actions: [({ event }) => store.set(sendAtom, { type: "kick", data: { username: event.username } })],
         },
         actionConfigure: {
-          actions: [
-            ({ event }) => {
-              store.set(sendAtom, { type: "configure", data: { quiz: event.quiz } });
-            },
-          ],
+          actions: [({ event }) => store.set(sendAtom, { type: "configure", data: { quiz: event.quiz } })],
         },
         actionStart: {
+          actions: [() => store.set(sendAtom, { type: "start" })],
+        },
+        eventStart: {
           target: "playing",
         },
       },
     },
-    playing: {},
+    playing: {
+      on: {
+        eventNextQuestion: {
+          actions: assign({
+            currentQuestion: ({ event }) => event.question,
+          }),
+        },
+        actionAnswerText: {
+          actions: [({ event }) => store.set(sendAtom, { type: "answer", data: { answer: { text: event.answer } } })],
+        },
+      },
+    },
   },
   on: {
     eventUpdateLobby: {
@@ -138,3 +165,5 @@ export const lobbyMachine = setup({
     },
   },
 });
+
+export const LobbyContext = createContext<ActorRefFrom<typeof lobbyMachine> | undefined>(undefined);

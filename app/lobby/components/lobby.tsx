@@ -1,9 +1,9 @@
 import { useSelector } from "@xstate/react";
-import type { ActorRefFrom, StateValueFrom } from "xstate";
+import type { StateValueFrom } from "xstate";
 
-import type { lobbyMachine } from "~/lobby/machine";
+import { type lobbyMachine, LobbyContext } from "~/lobby/machine";
 import type { LobbyEvent } from "~/lobby/events/lobby";
-import { useLobbyActor } from "~/lobby/hooks/actor";
+import { useLobbyActorSetup } from "~/lobby/hooks/actor";
 import { useLobbyNotification } from "~/lobby/hooks/notification";
 
 import { Disconnected } from "~/lobby/states/disconnected";
@@ -16,22 +16,19 @@ export interface LobbyProps {
   id: string;
 }
 
-type States = Record<
-  StateValueFrom<typeof lobbyMachine>,
-  (args: { actor: ActorRefFrom<typeof lobbyMachine>; lobbyId: string }) => React.ReactNode
->;
+type States = Record<StateValueFrom<typeof lobbyMachine>, (args: { lobbyId: string }) => React.ReactNode>;
 
 const states = {
-  disconnected: (args) => <Disconnected {...args} />,
-  connecting: (args) => <Connecting {...args} />,
-  configuring: (args) => <Configuring {...args} />,
-  playing: (_) => <Playing />,
+  disconnected: (args) => <Disconnected lobbyId={args.lobbyId} />,
+  connecting: () => <Connecting />,
+  configuring: () => <Configuring />,
+  playing: () => <Playing />,
 } as const satisfies States;
 
 export function Lobby(props: LobbyProps) {
-  const actor = useLobbyActor(props.initialLobby, props.id);
+  const actor = useLobbyActorSetup(props.initialLobby, props.id);
   const state = useSelector(actor, (state) => state.value);
   useLobbyNotification(actor);
 
-  return states[state]({ actor, lobbyId: props.id });
+  return <LobbyContext value={actor}>{states[state]({ lobbyId: props.id })}</LobbyContext>;
 }

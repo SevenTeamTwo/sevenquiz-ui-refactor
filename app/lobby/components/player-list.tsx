@@ -2,21 +2,17 @@ import { adventurerNeutral } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 import { Crown, X } from "lucide-react";
 import { useMemo } from "react";
-import type { ActorRefFrom } from "xstate";
 import { useSelector } from "@xstate/react";
 import sr from "seedrandom";
 
 import { Button } from "~/shadcn/components/button";
 import { Card, CardContent, CardFooter, CardHeader } from "~/shadcn/components/card";
 
-import type { lobbyMachine } from "~/lobby/machine";
 import { DESCRIPTIONS } from "~/lobby/constants";
+import { useLobbyActor } from "~/lobby/hooks/actor";
 
-export interface PlayerListProps {
-  actor: ActorRefFrom<typeof lobbyMachine>;
-}
-
-export function PlayerList({ actor }: PlayerListProps) {
+export function PlayerList() {
+  const actor = useLobbyActor();
   const lobbyData = useSelector(actor, (state) => ({
     username: state.context.username,
     owner: state.context.owner,

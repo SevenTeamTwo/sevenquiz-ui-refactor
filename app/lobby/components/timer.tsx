@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from "react";
 
 export interface TimerProps {
   duration: number;
-  onTimeout: () => void;
 }
 
 export function Timer(props: TimerProps) {
@@ -15,12 +14,6 @@ export function Timer(props: TimerProps) {
     }, 10);
     return () => clearInterval(interval);
   }, [props.duration]);
-
-  useEffect(() => {
-    if (remaining === 0) {
-      props.onTimeout();
-    }
-  }, [remaining, props.onTimeout]);
 
   return (
     <div className="relative w-16 h-16">

@@ -1,19 +1,16 @@
-import type { ActorRefFrom } from "xstate";
 import { useSelector } from "@xstate/react";
 
 import { Label } from "~/shadcn/components/label";
 import { Card, CardContent, CardFooter, CardHeader } from "~/shadcn/components/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shadcn/components/select";
 import { Input } from "~/shadcn/components/input";
-import type { lobbyMachine } from "~/lobby/machine";
 import { Button } from "~/shadcn/components/button";
 
-export interface SettingsCardProps {
-  actor: ActorRefFrom<typeof lobbyMachine>;
-}
+import { useLobbyActor } from "~/lobby/hooks/actor";
 
-export function SettingsCard(props: SettingsCardProps) {
-  const lobby = useSelector(props.actor, (state) => state.context);
+export function SettingsCard() {
+  const actor = useLobbyActor();
+  const lobby = useSelector(actor, (state) => state.context);
 
   return (
     <Card className="flex flex-col">
@@ -25,7 +22,7 @@ export function SettingsCard(props: SettingsCardProps) {
         <Select
           value={lobby.currentQuiz}
           disabled={lobby.owner !== lobby.username}
-          onValueChange={(value) => props.actor.send({ type: "actionConfigure", quiz: value })}
+          onValueChange={(value) => actor.send({ type: "actionConfigure", quiz: value })}
         >
           <SelectTrigger>
             <SelectValue placeholder="Quiz" />
@@ -45,7 +42,7 @@ export function SettingsCard(props: SettingsCardProps) {
         <Button
           className="w-full"
           disabled={lobby.owner !== lobby.username}
-          onClick={() => props.actor.send({ type: "actionStart" })}
+          onClick={() => actor.send({ type: "actionStart" })}
         >
           Commencer la partie
         </Button>
