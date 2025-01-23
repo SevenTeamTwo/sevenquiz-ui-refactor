@@ -43,7 +43,7 @@ type LobbyMachineEvent =
   | { type: "eventRegistered" }
   | { type: "eventConfigure"; quiz: string }
   | { type: "eventStart" }
-  | { type: "eventNextQuestion"; question: Question }
+  | { type: "eventQuestion"; question: Question }
   | { type: "actionConnect"; username: string }
   | { type: "actionKick"; username: string }
   | { type: "actionConfigure"; quiz: string }
@@ -103,7 +103,7 @@ export const lobbyMachine = setup({
           actions: [({ event }) => store.set(sendAtom, { type: "configure", data: { quiz: event.quiz } })],
         },
         actionStart: {
-          actions: [() => store.set(sendAtom, { type: "start" })],
+          actions: [() => store.set(sendAtom, { type: "start", data: {} })],
         },
         eventStart: {
           target: "playing",
@@ -112,7 +112,7 @@ export const lobbyMachine = setup({
     },
     playing: {
       on: {
-        eventNextQuestion: {
+        eventQuestion: {
           actions: assign({
             currentQuestion: ({ event }) => event.question,
           }),
@@ -122,6 +122,7 @@ export const lobbyMachine = setup({
         },
       },
     },
+    reviewing: {},
   },
   on: {
     eventUpdateLobby: {

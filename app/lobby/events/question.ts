@@ -4,10 +4,10 @@ import { z } from "zod";
 import type { lobbyMachine } from "~/lobby/machine";
 
 /**
- * Next question start schema
+ * Question start schema
  */
-export const nextQuestionEventSchema = z.object({
-  type: z.literal("nextQuestion"),
+export const questionEventSchema = z.object({
+  type: z.literal("question"),
   data: z.object({
     question: z.discriminatedUnion("type", [
       z.object({ type: z.literal("text"), id: z.number(), title: z.string(), time: z.number() }),
@@ -16,21 +16,21 @@ export const nextQuestionEventSchema = z.object({
 });
 
 /**
- * Type of a next question event
+ * Type of a question event
  */
-export type NextQuestionEvent = z.infer<typeof nextQuestionEventSchema>;
+export type QuestionEvent = z.infer<typeof questionEventSchema>;
 
 /**
- * Handle a next question event
+ * Handle a question event
  *
  * @param actor the actor
  * @param event the event
  */
-export function handleNextQuestionEvent(actor: ActorRefFrom<typeof lobbyMachine>, event: NextQuestionEvent) {
+export function handleQuestionEvent(actor: ActorRefFrom<typeof lobbyMachine>, event: QuestionEvent) {
   switch (event.data.question.type) {
     case "text":
       actor.send({
-        type: "eventNextQuestion",
+        type: "eventQuestion",
         question: {
           id: event.data.question.id,
           type: "text",

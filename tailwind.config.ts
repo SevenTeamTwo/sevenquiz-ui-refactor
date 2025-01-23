@@ -6,8 +6,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        title: [
+          "Staatliches",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+          '"Noto Color Emoji"',
+        ],
         sans: [
-          '"Inter"',
+          "Inter",
           "ui-sans-serif",
           "system-ui",
           "sans-serif",

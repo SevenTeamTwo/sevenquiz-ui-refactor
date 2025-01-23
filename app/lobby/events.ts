@@ -9,21 +9,12 @@ import { errorEventSchema, handleErrorEvent } from "./events/error";
 import { handleKickEvent, kickEventSchema } from "./events/kick";
 import { configureEventSchema, handleConfigureEvent } from "./events/configure";
 import { handleStartEvent, startEventSchema } from "./events/start";
-import { handleNextQuestionEvent, nextQuestionEventSchema } from "./events/nextQuestion";
+import { handleQuestionEvent, questionEventSchema } from "./events/question";
 
 /**
  * List of event types
  */
-const eventTypes = [
-  "lobby",
-  "playerUpdate",
-  "register",
-  "kick",
-  "configure",
-  "start",
-  "nextQuestion",
-  "error",
-] as const;
+const eventTypes = ["lobby", "playerUpdate", "register", "kick", "configure", "start", "question", "error"] as const;
 
 /**
  * Base event schema
@@ -50,7 +41,7 @@ const eventHandlers = {
   error: (actor, event) => handleErrorEvent(actor, errorEventSchema.parse(event)),
   configure: (actor, event) => handleConfigureEvent(actor, configureEventSchema.parse(event)),
   start: (actor, event) => handleStartEvent(actor, startEventSchema.parse(event)),
-  nextQuestion: (actor, event) => handleNextQuestionEvent(actor, nextQuestionEventSchema.parse(event)),
+  question: (actor, event) => handleQuestionEvent(actor, questionEventSchema.parse(event)),
 } as const satisfies EventHandlers;
 
 /**
