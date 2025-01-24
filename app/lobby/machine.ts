@@ -6,20 +6,20 @@ import { sendAtom, store } from "./websocket";
 
 type LobbyMachineInput = LobbyEvent;
 
-export type Question =
-  | {
-      id: number;
-      type: "choices";
-      title: string;
-      choices: string[];
-      duration: number;
-    }
-  | {
-      id: number;
-      type: "text";
-      title: string;
-      duration: number;
-    };
+export type Question = {
+  id: number;
+  type: "text";
+  title: string;
+  duration: number;
+};
+
+export type Review = {
+  question: Question & {
+    answer: string;
+  };
+  player: string;
+  answer: string;
+};
 
 type LobbyMachineContext = {
   username: string;
@@ -30,6 +30,7 @@ type LobbyMachineContext = {
   quizzes: string[];
   currentQuiz: string;
   currentQuestion: Question | null;
+  currentReview: Review | null;
 };
 
 type LobbyMachineEvent =
@@ -43,6 +44,7 @@ type LobbyMachineEvent =
   | { type: "eventRegistered" }
   | { type: "eventConfigure"; quiz: string }
   | { type: "eventStart" }
+  | { type: "eventReview"; review: Review }
   | { type: "eventQuestion"; question: Question }
   | { type: "actionConnect"; username: string }
   | { type: "actionKick"; username: string }
@@ -73,6 +75,7 @@ export const lobbyMachine = setup({
     currentQuiz: input.data.currentQuiz,
     created: input.data.created,
     currentQuestion: null,
+    currentReview: null,
   }),
   initial: "disconnected",
   states: {
@@ -117,12 +120,26 @@ export const lobbyMachine = setup({
             currentQuestion: ({ event }) => event.question,
           }),
         },
+        eventReview: {
+          actions: assign({
+            currentReview: ({ event }) => event.review,
+          }),
+          target: "reviewing",
+        },
         actionAnswerText: {
           actions: [({ event }) => store.set(sendAtom, { type: "answer", data: { answer: { text: event.answer } } })],
         },
       },
     },
-    reviewing: {},
+    reviewing: {
+      on: {
+        eventReview: {
+          actions: assign({
+            currentReview: ({ event }) => event.review,
+          }),
+        },
+      },
+    },
   },
   on: {
     eventUpdateLobby: {

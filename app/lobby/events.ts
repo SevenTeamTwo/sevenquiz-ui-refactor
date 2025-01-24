@@ -10,11 +10,22 @@ import { handleKickEvent, kickEventSchema } from "./events/kick";
 import { configureEventSchema, handleConfigureEvent } from "./events/configure";
 import { handleStartEvent, startEventSchema } from "./events/start";
 import { handleQuestionEvent, questionEventSchema } from "./events/question";
+import { handleReviewEvent, reviewEventSchema } from "./events/review";
 
 /**
  * List of event types
  */
-const eventTypes = ["lobby", "playerUpdate", "register", "kick", "configure", "start", "question", "error"] as const;
+const eventTypes = [
+  "lobby",
+  "playerUpdate",
+  "register",
+  "kick",
+  "configure",
+  "start",
+  "question",
+  "review",
+  "error",
+] as const;
 
 /**
  * Base event schema
@@ -42,6 +53,7 @@ const eventHandlers = {
   configure: (actor, event) => handleConfigureEvent(actor, configureEventSchema.parse(event)),
   start: (actor, event) => handleStartEvent(actor, startEventSchema.parse(event)),
   question: (actor, event) => handleQuestionEvent(actor, questionEventSchema.parse(event)),
+  review: (actor, event) => handleReviewEvent(actor, reviewEventSchema.parse(event)),
 } as const satisfies EventHandlers;
 
 /**
