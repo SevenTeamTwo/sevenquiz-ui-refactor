@@ -14,17 +14,19 @@ interface PlayerScoresProps {
 
 export function PlayerScores(props: PlayerScoresProps) {
   const players = useMemo(() => {
-    return Object.entries(props.results).map(([player, score]) => {
-      const seed = `${props.created.toISOString()}-${player}`;
-      const description = DESCRIPTIONS[Math.abs(sr(seed).int32()) % DESCRIPTIONS.length];
+    return Object.entries(props.results)
+      .map(([player, score]) => {
+        const seed = `${props.created.toISOString()}-${player}`;
+        const description = DESCRIPTIONS[Math.abs(sr(seed).int32()) % DESCRIPTIONS.length];
 
-      return {
-        name: player,
-        description,
-        avatar: createAvatar(adventurerNeutral, { seed }).toDataUri(),
-        score,
-      };
-    });
+        return {
+          name: player,
+          description,
+          avatar: createAvatar(adventurerNeutral, { seed }).toDataUri(),
+          score,
+        };
+      })
+      .sort((a, b) => b.score - a.score);
   }, [props.created, props.results]);
 
   return (
