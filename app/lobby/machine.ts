@@ -31,6 +31,7 @@ type LobbyMachineContext = {
   currentQuiz: string;
   currentQuestion: Question | null;
   currentReview: Review | null;
+  results: Record<string, number> | null;
 };
 
 type LobbyMachineEvent =
@@ -46,11 +47,13 @@ type LobbyMachineEvent =
   | { type: "eventStart" }
   | { type: "eventReview"; review: Review }
   | { type: "eventQuestion"; question: Question }
+  | { type: "eventResults"; results: Record<string, number> }
   | { type: "actionConnect"; username: string }
   | { type: "actionKick"; username: string }
   | { type: "actionConfigure"; quiz: string }
   | { type: "actionStart" }
-  | { type: "actionAnswerText"; answer: string };
+  | { type: "actionAnswerText"; answer: string }
+  | { type: "actionReview"; validate: boolean };
 
 type LobbyMachineEmitted =
   | { type: "playerJoined"; username: string }
@@ -76,6 +79,7 @@ export const lobbyMachine = setup({
     created: input.data.created,
     currentQuestion: null,
     currentReview: null,
+    results: null,
   }),
   initial: "disconnected",
   states: {
@@ -122,6 +126,7 @@ export const lobbyMachine = setup({
         },
         eventReview: {
           actions: assign({
+            currentQuestion: null,
             currentReview: ({ event }) => event.review,
           }),
           target: "reviewing",
@@ -133,13 +138,24 @@ export const lobbyMachine = setup({
     },
     reviewing: {
       on: {
+        actionReview: {
+          actions: [({ event }) => store.set(sendAtom, { type: "review", data: { validate: event.validate } })],
+        },
         eventReview: {
           actions: assign({
             currentReview: ({ event }) => event.review,
           }),
         },
+        eventResults: {
+          actions: assign({
+            currentReview: null,
+            results: ({ event }) => event.results,
+          }),
+          target: "results",
+        },
       },
     },
+    results: {},
   },
   on: {
     eventUpdateLobby: {

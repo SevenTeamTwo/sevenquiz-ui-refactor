@@ -46,7 +46,7 @@ export const connectAtom = atom(null, (get, set, update: { id: string }) => {
   socket.addEventListener("open", () => set(updateSocketContext, { state: "connected" }), {
     signal: abortController.signal,
   });
-  socket.addEventListener("close", () => set(updateSocketContext, { state: "disconnected", initialLobby: null }), {
+  socket.addEventListener("close", () => set(updateSocketContext, { state: "disconnected" }), {
     signal: abortController.signal,
   });
   socket.addEventListener(

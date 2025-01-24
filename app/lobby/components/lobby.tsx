@@ -11,6 +11,7 @@ import { Connecting } from "~/lobby/states/connecting";
 import { Configuring } from "~/lobby/states/configuring";
 import { Playing } from "~/lobby/states/playing";
 import { Reviewing } from "~/lobby/states/reviewing";
+import { Results } from "~/lobby/states/results";
 
 export interface LobbyProps {
   initialLobby: LobbyEvent;
@@ -25,6 +26,7 @@ const states = {
   configuring: () => <Configuring />,
   playing: () => <Playing />,
   reviewing: () => <Reviewing />,
+  results: () => <Results />,
 } as const satisfies States;
 
 export function Lobby(props: LobbyProps) {

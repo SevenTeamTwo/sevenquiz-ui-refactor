@@ -11,6 +11,7 @@ import { Separator } from "~/shadcn/components/separator";
 
 import type { Review } from "~/lobby/machine";
 import { DESCRIPTIONS } from "~/lobby/constants";
+import { useLobbyActor } from "~/lobby/hooks/actor";
 
 export interface ReviewingTextProps {
   created: Date;
@@ -19,6 +20,8 @@ export interface ReviewingTextProps {
 }
 
 export function ReviewingText(props: ReviewingTextProps) {
+  const actor = useLobbyActor();
+
   const playerDetails = useMemo(() => {
     const seed = `${props.created.toISOString()}-${props.review.player}`;
     return {
@@ -30,13 +33,13 @@ export function ReviewingText(props: ReviewingTextProps) {
   return (
     <div className="flex-grow grid grid-rows-[1fr,1fr] place-items-center gap-2 md:gap-6 p-6">
       <div className="text-center space-y-4">
-        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight">Quel est la capitale de la France ?</h2>
+        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight">{props.review.question.title}</h2>
         <Separator />
         <div>
           <p className="scroll-m-20 text-lg font-medium tracking-tight text-muted-foreground">
             La réponse attendue était
           </p>
-          <p className="text-4xl font-bold">Paris</p>
+          <p className="text-4xl font-bold">{props.review.question.answer}</p>
         </div>
       </div>
       <Card key={props.review.player} className="p-4 space-y-4 w-full max-w-xl self-start">
@@ -48,16 +51,24 @@ export function ReviewingText(props: ReviewingTextProps) {
           </div>
         </div>
         <Input
-          value="Paris"
+          value={props.review.answer}
           className="max-w-xl px-4 py-6 text-xl disabled:opacity-80  md:text-lg font-semibold"
           disabled={true}
         />
         {props.canReview && (
           <div className="flex gap-x-4">
-            <Button variant="default" className="flex-grow h-12">
+            <Button
+              variant="default"
+              className="flex-grow h-12"
+              onClick={() => actor.send({ type: "actionReview", validate: true })}
+            >
               <CheckIcon />
             </Button>
-            <Button variant="destructive" className="flex-grow h-12">
+            <Button
+              variant="destructive"
+              className="flex-grow h-12"
+              onClick={() => actor.send({ type: "actionReview", validate: false })}
+            >
               <XIcon />
             </Button>
           </div>

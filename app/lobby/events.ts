@@ -11,6 +11,7 @@ import { configureEventSchema, handleConfigureEvent } from "./events/configure";
 import { handleStartEvent, startEventSchema } from "./events/start";
 import { handleQuestionEvent, questionEventSchema } from "./events/question";
 import { handleReviewEvent, reviewEventSchema } from "./events/review";
+import { handleResultsEvent, resultsEventSchema } from "./events/results";
 
 /**
  * List of event types
@@ -24,6 +25,7 @@ const eventTypes = [
   "start",
   "question",
   "review",
+  "results",
   "error",
 ] as const;
 
@@ -54,6 +56,7 @@ const eventHandlers = {
   start: (actor, event) => handleStartEvent(actor, startEventSchema.parse(event)),
   question: (actor, event) => handleQuestionEvent(actor, questionEventSchema.parse(event)),
   review: (actor, event) => handleReviewEvent(actor, reviewEventSchema.parse(event)),
+  results: (actor, event) => handleResultsEvent(actor, resultsEventSchema.parse(event)),
 } as const satisfies EventHandlers;
 
 /**

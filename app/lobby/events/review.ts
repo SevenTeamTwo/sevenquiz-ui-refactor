@@ -7,7 +7,7 @@ import type { lobbyMachine } from "~/lobby/machine";
  * Review schema
  */
 export const reviewEventSchema = z.object({
-  type: z.literal("question"),
+  type: z.literal("review"),
   data: z.object({
     question: z.discriminatedUnion("type", [
       z.object({
@@ -21,7 +21,9 @@ export const reviewEventSchema = z.object({
       }),
     ]),
     player: z.string(),
-    answer: z.string(),
+    answer: z.object({
+      text: z.string(),
+    }),
   }),
 });
 
@@ -50,7 +52,7 @@ export function handleReviewEvent(actor: ActorRefFrom<typeof lobbyMachine>, even
             answer: event.data.question.answer.text,
           },
           player: event.data.player,
-          answer: event.data.answer,
+          answer: event.data.answer.text,
         },
       });
       break;

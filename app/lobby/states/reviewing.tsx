@@ -13,5 +13,5 @@ export function Reviewing() {
     return <>Waiting for a review</>;
   }
 
-  return <ReviewingText created={created} review={review} canReview={owner === username} />;
+  return <ReviewingText key={review.question.id} created={created} review={review} canReview={owner === username} />;
 }

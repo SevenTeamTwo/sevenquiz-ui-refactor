@@ -12,9 +12,9 @@ export function Playing() {
     return <>Waiting for the question...</>;
   }
 
-  if (question.type === "choices") {
-    return <PlayingChoices key={question.id} {...question} />;
-  }
+  // if (question.type === "choices") {
+  //   return <PlayingChoices key={question.id} {...question} />;
+  // }
 
   if (question.type === "text") {
     return <PlayingText key={question.id} {...question} />;
