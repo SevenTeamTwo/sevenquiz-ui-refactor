@@ -11,6 +11,7 @@ interface SocketContext {
   state: Exclude<SocketStatus, "unconnected">;
   initialLobby: LobbyEvent | null;
   callbacks: ((message: unknown) => void)[];
+  gameState: "disconnected" | "connecting" | "configuring" | "playing" | "reviewing" | "results";
 }
 
 export const store = createStore();
@@ -78,6 +79,7 @@ export const connectAtom = atom(null, (get, set, update: { id: string }) => {
     state: "connecting",
     initialLobby: null,
     callbacks: [],
+    gameState: "disconnected",
   });
 });
 
@@ -126,3 +128,10 @@ export const receiveAtom = atom(null, (get, _, update: unknown) => {
     }
   }
 });
+
+export const gameStateAtom = atom(
+  (get) => get(socketContextAtom)?.gameState ?? "disconnected",
+  (_, set, update: SocketContext["gameState"]) => {
+    set(updateSocketContext, { gameState: update });
+  },
+);

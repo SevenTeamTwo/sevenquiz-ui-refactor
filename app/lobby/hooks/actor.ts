@@ -6,13 +6,19 @@ import { lobbyMachine, LobbyContext } from "~/lobby/machine";
 import { removeUsername, retrieveUsername } from "~/lobby/utils";
 import { handleEvent } from "~/lobby/events";
 import type { LobbyEvent } from "~/lobby/events/lobby";
-import { addCallbackAtom, removeCallbackAtom } from "~/lobby/websocket";
+import { addCallbackAtom, gameStateAtom, removeCallbackAtom } from "~/lobby/websocket";
 
 export function useLobbyActorSetup(initialLobby: LobbyEvent, id: string) {
   const actor = useActorRef(lobbyMachine, { input: initialLobby });
   const state = useSelector(actor, (state) => state.value);
   const addCallback = useSetAtom(addCallbackAtom);
   const removeCallback = useSetAtom(removeCallbackAtom);
+  const setGameState = useSetAtom(gameStateAtom);
+
+  useEffect(() => {
+    setGameState(state);
+    return () => setGameState("disconnected");
+  }, [state, setGameState]);
 
   useEffect(() => {
     const cb = (message: unknown) => handleEvent(actor, message);

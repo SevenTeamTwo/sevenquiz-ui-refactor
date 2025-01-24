@@ -8,9 +8,9 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export default function ({ params }: Route.ComponentProps) {
-  const { status, initialLobby } = useLobbyConnection(params.id);
+  const { status, initialLobby, gameState } = useLobbyConnection(params.id);
 
-  if (initialLobby !== null) {
+  if (initialLobby !== null && !(gameState !== "results" && status === "disconnected")) {
     return <Lobby initialLobby={initialLobby} id={params.id} />;
   }
 

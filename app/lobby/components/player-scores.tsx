@@ -33,21 +33,25 @@ export function PlayerScores(props: PlayerScoresProps) {
         <h2 className="font-semibold tracking-wide text-xl text-center">Résultats</h2>
       </CardHeader>
       <div className="flex-grow">
-        {players.map((player, index) => (
-          <CardContent key={player.name} className="flex justify-between items-center">
-            <div className="flex items-center">
-              <img className="h-12 aspect-square rounded-full" src={player.avatar} alt={player.name} />
-              <div className=" flex flex-col ml-4 justify-center">
-                <p className="font-semibold">{player.name}</p>
-                <p className="text-sm text-muted-foreground">{player.description}</p>
+        <CardContent className="grid grid-cols-[1fr,1fr,auto] gap-8 items-center">
+          {players.map((player, index) => (
+            <>
+              <div key={player.name} className="flex items-center">
+                <img className="h-12 aspect-square rounded-full" src={player.avatar} alt={player.name} />
+                <div className=" flex flex-col ml-4 justify-center">
+                  <p className="font-semibold">{player.name}</p>
+                  <p className="text-sm text-muted-foreground">{player.description}</p>
+                </div>
               </div>
-            </div>
-            <p className="text-muted-foreground">
-              marque <span className="font-extrabold text-foreground text-lg">{player.score}</span> points
-            </p>
-            {index === 0 && <Crown className="min-w-6 h-6 aspect-square ml-12 mr-[6px] text-yellow-400" />}
-          </CardContent>
-        ))}
+              <p key={player.name} className="text-muted-foreground">
+                marque <span className="font-extrabold text-foreground text-lg">{player.score}</span> point
+                {player.score > 1 && "s"}
+              </p>
+              {index === 0 && <Crown className="min-w-6 h-6 aspect-square ml-12 mr-[6px] text-yellow-400" />}
+              {index !== 0 && <div />}
+            </>
+          ))}
+        </CardContent>
       </div>
       <CardFooter>
         <p className="w-full text-sm text-muted-foreground text-center">
