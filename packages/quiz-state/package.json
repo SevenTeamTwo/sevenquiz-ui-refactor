@@ -1,0 +1,12 @@
+{
+  "name": "@seven/quiz-state",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./machine": "./src/machine.ts"
+  },
+  "dependencies": {
+    "@xstate/react": "^5.0.2",
+    "xstate": "^5.19.2"
+  }
+}
