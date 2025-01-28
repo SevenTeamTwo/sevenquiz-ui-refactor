@@ -1,4 +1,4 @@
-import { assign, setup, emit } from "xstate";
+import { assign, setup, emit, type ActorRefFrom } from "xstate";
 
 import type { QuizContext, QuizLobby } from "./context.ts";
 import type { QuizEvent } from "./events.ts";
@@ -117,3 +117,8 @@ export const quizMachine = setup({
     },
   },
 });
+
+/**
+ * Type of an actor reference for the quiz machine.
+ */
+export type QuizActor = ActorRefFrom<typeof quizMachine>;

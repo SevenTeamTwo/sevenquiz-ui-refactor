@@ -1,0 +1,10 @@
+{
+  "name": "@seven/quiz-client",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@seven/quiz-state": "workspace:*",
+    "jotai": "^2.11.1",
+    "zod": "^3.24.1"
+  }
+}
