@@ -1,0 +1,9 @@
+# IDE
+/.vscode
+
+# Environment files
+.env*
+!.env.example
+
+# Bun
+/node_modules/
