@@ -1,4 +1,4 @@
-import { setup } from "xstate";
+import { assign, setup, emit } from "xstate";
 
 import type { QuizContext, QuizLobby } from "./context.ts";
 import type { QuizEvent } from "./events.ts";
@@ -20,13 +20,100 @@ export const quizMachine = setup({
     players: input.players,
     maxPlayers: input.maxPlayers,
     quizzes: input.quizzes,
-    currentQuizz: input.currentQuizz,
+    currentQuiz: input.currentQuiz,
     currentQuestion: null,
     currentReview: null,
     results: null,
   }),
-  initial: "disconnected",
+  initial: "unregistered",
   states: {
-    disconnected: {},
+    unregistered: {
+      on: {
+        registered: {
+          target: "configuring",
+        },
+      },
+    },
+    configuring: {
+      on: {
+        configure: {
+          actions: assign({
+            currentQuiz: ({ event }) => event.quiz,
+          }),
+        },
+        start: {
+          target: "playing",
+        },
+      },
+    },
+    playing: {
+      on: {
+        question: {
+          actions: assign({
+            currentQuestion: ({ event }) => event.question,
+          }),
+        },
+        review: {
+          actions: assign({
+            currentQuestion: null,
+            currentReview: ({ event }) => event.review,
+          }),
+          target: "reviewing",
+        },
+      },
+    },
+    reviewing: {
+      on: {
+        review: {
+          actions: assign({
+            currentReview: ({ event }) => event.review,
+          }),
+        },
+        results: {
+          actions: assign({
+            currentReview: null,
+            results: ({ event }) => event.results,
+          }),
+          target: "results",
+        },
+      },
+    },
+    results: {},
+  },
+  on: {
+    updateLobby: {
+      actions: assign({
+        created: ({ event }) => event.created,
+        owner: ({ event }) => event.owner,
+        players: ({ event }) => event.players,
+        maxPlayers: ({ event }) => event.maxPlayers,
+        quizzes: ({ event }) => event.quizzes,
+        currentQuiz: ({ event }) => event.currentQuiz,
+      }),
+    },
+    playerJoined: {
+      actions: [
+        assign({
+          players: ({ context, event }) => [...context.players, event.name],
+        }),
+        emit(({ event }) => ({ type: "playerJoined", name: event.name })),
+      ],
+    },
+    playerLeft: {
+      actions: [
+        assign({
+          players: ({ context, event }) => context.players.filter((player) => player !== event.name),
+        }),
+        emit(({ event }) => ({ type: "playerLeft", name: event.name })),
+      ],
+    },
+    ownerChanged: {
+      actions: [
+        assign({
+          owner: ({ event }) => event.name,
+        }),
+        emit(({ event }) => ({ type: "ownerChanged", name: event.name })),
+      ],
+    },
   },
 });

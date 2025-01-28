@@ -3,10 +3,14 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./machine": "./src/machine.ts"
+    ".": "./src/machine.ts",
+    "./question": "./src/question.ts",
+    "./review": "./src/review.ts",
+    "./context": "./src/context.ts",
+    "./events": "./src/events.ts",
+    "./emitted": "./src/emitted.ts"
   },
   "dependencies": {
-    "@xstate/react": "^5.0.2",
     "xstate": "^5.19.2"
   }
 }

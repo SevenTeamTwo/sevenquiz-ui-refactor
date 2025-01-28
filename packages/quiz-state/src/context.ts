@@ -11,7 +11,7 @@ export interface QuizContext {
   players: string[];
   maxPlayers: number;
   quizzes: string[];
-  currentQuizz: string;
+  currentQuiz: string;
   currentQuestion: Question | null;
   currentReview: Review | null;
   results: Record<string, number> | null;
@@ -20,4 +20,4 @@ export interface QuizContext {
 /**
  * Represent the lobby of the quiz
  */
-export type QuizLobby = Pick<QuizContext, "created" | "owner" | "players" | "maxPlayers" | "quizzes" | "currentQuizz">;
+export type QuizLobby = Pick<QuizContext, "created" | "owner" | "players" | "maxPlayers" | "quizzes" | "currentQuiz">;
