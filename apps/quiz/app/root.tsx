@@ -1,10 +1,17 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { ThemeProvider, useTheme, PreventFlashOnWrongTheme, type Theme } from "remix-themes";
+import { clsx } from "clsx";
+import invariant from "tiny-invariant";
 
 import type { Route } from "./+types/root.ts";
+import { themeSessionResolver } from "./session.server.ts";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  {
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com",
+  },
   {
     rel: "preconnect",
     href: "https://fonts.gstatic.com",
@@ -16,26 +23,54 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export async function loader({ request }: Route.LoaderArgs) {
+  const { getTheme } = await themeSessionResolver(request);
+
+  invariant(process.env.API_URL, "API_URL environment variable must be set");
+  invariant(process.env.WEBSOCKET_URL, "WEBSOCKET_URL environment variable must be set");
+
+  return {
+    specifiedTheme: getTheme(),
+    env: {
+      apiUrl: process.env.API_URL,
+      websocketUrl: process.env.WEBSOCKET_URL,
+    },
+  };
+}
+
+function App(props: { specifiedTheme: Theme | null; env: Record<string, string> }) {
+  const [theme] = useTheme();
+
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true} className={clsx("bg-background", theme)}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        <PreventFlashOnWrongTheme ssrTheme={Boolean(props.specifiedTheme)} />
         <Links />
       </head>
       <body>
-        {children}
+        <Outlet />
         <ScrollRestoration />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: setting the window.env variable
+          dangerouslySetInnerHTML={{
+            __html: `window.env = ${JSON.stringify(props.env)}`,
+          }}
+        />
         <Scripts />
       </body>
     </html>
   );
 }
 
-export default function App() {
-  return <Outlet />;
+export default function ({ loaderData }: Route.ComponentProps) {
+  return (
+    <ThemeProvider specifiedTheme={loaderData.specifiedTheme} themeAction="/actions/set-theme">
+      <App {...loaderData} />
+    </ThemeProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
